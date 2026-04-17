@@ -85,4 +85,4 @@ app.listen(PORT, () => {
   console.log(`----------------------------------------`);
 });
 
-export default app;
+module.exports = app;
