@@ -84,3 +84,5 @@ app.listen(PORT, () => {
   console.log(`   Satellite Link: Established          `);
   console.log(`----------------------------------------`);
 });
+
+export default app;
