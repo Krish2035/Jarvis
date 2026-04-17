@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --color-hud-green: #00ffea; /* Primary cyan-green from the image */
+  --color-hud-green-dark: #004440;
+  --color-hud-background: #000c0a; /* Dark green-black base */
+}
+
+@layer base {
+  body {
+    margin: 0;
+    background-color: var(--color-hud-background);
+    cursor: none; /* Crucial for HUD feeling */
+    overflow: hidden; /* Fixed single-screen layout */
+    color: var(--color-hud-green);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Mono', monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scanline Overlay for the analog HUD look */
+  body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    z-index: 9999;
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.3;
+  }
+}
+
+@layer utilities {
+  /* Slow rotation for HUD gears and rings */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 12s linear infinite;
+  }
+
+  /* Scanning horizontal bar effect */
+  @keyframes scan {
+    from { top: -10%; }
+    to { top: 110%; }
+  }
+
+  .animate-scan {
+    animation: scan 8s linear infinite;
+  }
+
+  /* Custom Grid Background */
+  .bg-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(0, 255, 234, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 255, 234, 0.03) 1px, transparent 1px);
+  }
+
+  /* --- JARVIS SCROLLBAR UTILITIES --- */
+  
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Custom "Holographic" Scrollbar for News Panel 
+     This fixes the bulky white scrollbar seen in your second image.
+  */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px; /* Thin and subtle */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 255, 234, 0.02);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 234, 0.2); /* Semi-transparent cyan */
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 234, 0.1);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 234, 0.5); /* Brightens on interaction */
+    box-shadow: 0 0 8px rgba(0, 255, 234, 0.4);
+  }
+
+  /* Glow effects for HUD elements */
+  .text-glow {
+    text-shadow: 0 0 10px rgba(0, 255, 234, 0.5);
+  }
+  
+  .border-glow {
+    box-shadow: 0 0 15px rgba(0, 255, 234, 0.15);
+  }
+
+  /* Mask for the news feed fade effect at top/bottom */
+  .news-mask {
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  }
+}
