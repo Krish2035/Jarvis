@@ -1,7 +1,8 @@
+import React from 'react';
 import { Mic } from 'lucide-react';
 import axios from 'axios';
 
-export const SystemRings = ({ isListening, setIsListening, speak, setNews, setStatus }) => {
+export const SystemRings = ({ isListening, setIsListening, speak, setNews, setStatus, onCommandTranscribed }) => {
   
   const handleListen = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -18,8 +19,6 @@ export const SystemRings = ({ isListening, setIsListening, speak, setNews, setSt
     recognition.onstart = () => {
       setIsListening(true);
       setStatus("LISTENING...");
-      // Optional: A shorter, non-intrusive sound or silence so he doesn't talk over you
-      // speak("Listening."); 
     };
 
     recognition.onresult = async (event) => {
@@ -27,19 +26,24 @@ export const SystemRings = ({ isListening, setIsListening, speak, setNews, setSt
       setStatus("ANALYZING...");
       console.log("User said:", transcript);
       
+      // Update command log history
+      if (onCommandTranscribed) {
+        onCommandTranscribed(transcript);
+      }
+
       try {
-        // Post to your backend
+        // Post to backend
         const { data } = await axios.post('http://localhost:5000/api/process-command', { 
           transcript 
         });
         
-        // 1. Update the Right-Side News Panel
+        // Update news panels
         setNews(data.articles || []);
         
-        // 2. Update Status
+        // Reset status
         setStatus("ONLINE");
 
-        // 3. JARVIS SPEAKS: Clear previous speech and say the answer
+        // Synthesize voice
         if (data.speech) {
           speak(data.speech); 
         } else {
@@ -55,7 +59,6 @@ export const SystemRings = ({ isListening, setIsListening, speak, setNews, setSt
 
     recognition.onend = () => {
       setIsListening(false);
-      // If status wasn't changed by onresult/onerror, reset it
       setStatus((prev) => prev === "LISTENING..." ? "ONLINE" : prev);
     };
 
@@ -72,48 +75,97 @@ export const SystemRings = ({ isListening, setIsListening, speak, setNews, setSt
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative">
-        {/* Outer HUD Rings */}
+    <div className="flex flex-col items-center select-none">
+      <div className="relative flex items-center justify-center w-72 h-72">
+        
+        {/* Decorative corner brackets of the reactor core */}
+        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-hud-green/30" />
+        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-hud-green/30" />
+        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-hud-green/30" />
+        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-hud-green/30" />
+
+        {/* Ring 1 (Outermost): Custom 3-segment arc rotating reverse */}
         <div 
-          className="absolute inset-[-25px] border-2 border-hud-green/20 rounded-full animate-[spin_12s_linear_infinite]" 
-          style={{ clipPath: 'polygon(0 0, 30% 0, 30% 100%, 0% 100%)' }} 
-        />
-        <div 
-          className="absolute inset-[-40px] border border-hud-green/10 rounded-full animate-[spin_20s_linear_infinite_reverse]" 
-          style={{ clipPath: 'polygon(70% 0, 100% 0, 100% 100%, 70% 100%)' }} 
+          className={`absolute w-[280px] h-[280px] border-2 border-hud-green/20 rounded-full transition-all duration-700 ${
+            isListening ? 'animate-[spin-slow-reverse_6s_linear_infinite] border-hud-cyan/50 scale-105' : 'animate-spin-slow-reverse'
+          }`}
+          style={{ clipPath: 'polygon(0 0, 40% 0, 40% 100%, 0% 100%, 100% 100%, 100% 80%, 0 80%)' }} 
         />
         
+        {/* Ring 2: Medium speed forward arc */}
+        <div 
+          className={`absolute w-[256px] h-[256px] border border-dashed border-hud-green/20 rounded-full transition-all duration-700 ${
+            isListening ? 'animate-[spin-medium_3s_linear_infinite] border-hud-cyan/40 scale-105' : 'animate-spin-medium'
+          }`}
+        />
+
+        {/* Ring 3: Solid thin circle with gap */}
+        <div 
+          className="absolute w-[238px] h-[238px] border border-hud-green/10 rounded-full animate-spin-slow"
+          style={{ clipPath: 'polygon(10% 0, 90% 0, 90% 90%, 10% 90%)' }} 
+        />
+
+        {/* Ring 4: Solid tech accent rings */}
+        <div 
+          className={`absolute w-[210px] h-[210px] border-2 border-hud-green-dark/40 rounded-full transition-all duration-500 ${
+            isListening ? 'border-hud-cyan/60 scale-95' : ''
+          }`}
+        />
+
+        {/* Hexagonal inner decorator behind the mic */}
+        <svg className="absolute w-[180px] h-[180px] opacity-25 animate-spin-slow pointer-events-none" viewBox="0 0 100 100">
+          <polygon 
+            points="50,5 90,25 90,75 50,95 10,75 10,25" 
+            fill="none" 
+            stroke="var(--color-hud-green)" 
+            strokeWidth="0.8" 
+          />
+        </svg>
+
+        {/* Waveform Visualizer: Surrounds the center button */}
+        <div className="absolute flex gap-[3px] justify-center items-center h-12 w-44 z-10 pointer-events-none">
+          <div className={`wave-bar ${isListening ? 'active-1' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-2' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-3' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-4' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-5' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-3' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-2' : 'idle'}`} />
+          <div className={`wave-bar ${isListening ? 'active-1' : 'idle'}`} />
+        </div>
+
         {/* Mic Button Core */}
         <button 
           onClick={handleListen}
           disabled={isListening}
-          className={`relative h-56 w-56 rounded-full flex items-center justify-center transition-all duration-700 z-20 ${
+          className={`relative h-44 w-44 rounded-full flex items-center justify-center transition-all duration-700 z-20 cursor-pointer ${
             isListening 
-              ? 'bg-hud-green shadow-[0_0_100px_rgba(0,255,234,0.7)] scale-110' 
-              : 'bg-black/80 border-2 border-hud-green-dark hover:border-hud-green shadow-[0_0_30px_rgba(0,255,234,0.2)]'
+              ? 'bg-hud-cyan border-hud-cyan shadow-[0_0_80px_rgba(0,255,234,0.6)] scale-90' 
+              : 'bg-black/95 border-2 border-hud-green-dark hover:border-hud-cyan shadow-[0_0_40px_rgba(0,255,234,0.15)] hover:scale-105'
           }`}
         >
-          <div className="absolute inset-4 rounded-full border border-hud-green/10 animate-pulse" />
+          {/* Inner ring overlay */}
+          <div className="absolute inset-3 rounded-full border border-hud-green/10 animate-pulse" />
           
           <Mic 
-            className={`${isListening ? 'text-black scale-125' : 'text-hud-green'} transition-all duration-500`} 
-            size={60} 
+            className={`${isListening ? 'text-black scale-110' : 'text-hud-green group-hover:text-hud-cyan'} transition-all duration-500`} 
+            size={40} 
             strokeWidth={1.5}
           />
           
+          {/* Pulse Ripple Effect */}
           {isListening && (
-            <div className="absolute inset-[-10px] rounded-full animate-[ping_1.5s_ease-in-out_infinite] border-2 border-hud-green/40"></div>
+            <div className="absolute inset-[-12px] rounded-full animate-[ping_1.8s_ease-in-out_infinite] border border-hud-cyan/50" />
           )}
         </button>
       </div>
 
-      <div className="mt-12 text-center">
-        <p className="text-[11px] font-bold text-hud-green tracking-[0.6em] uppercase animate-pulse">
-          {isListening ? "Neural Uplink Active" : "Neural Link Standby"}
+      <div className="mt-8 text-center">
+        <p className="text-[10px] font-black font-orbitron text-hud-green tracking-[0.4em] uppercase animate-pulse">
+          {isListening ? "NEURAL LINK TRANSMITTING" : "NEURAL UPLINK READY"}
         </p>
-        <p className="text-[8px] text-hud-green/30 tracking-[0.2em] mt-2 italic font-mono uppercase">
-          Biometric Authorization: Verified
+        <p className="text-[8px] text-hud-green/30 tracking-[0.15em] mt-1.5 font-mono uppercase">
+          BIOMETRIC AUTH: SECURE // LVL_7
         </p>
       </div>
     </div>

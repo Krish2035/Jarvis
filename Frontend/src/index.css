@@ -1,115 +1,299 @@
 @import "tailwindcss";
 
+/* ============================================
+   JARVIS MARK VII — DESIGN SYSTEM
+   ============================================ */
+
 @theme {
-  --color-hud-green: #00ffea; /* Primary cyan-green from the image */
-  --color-hud-green-dark: #004440;
-  --color-hud-background: #000c0a; /* Dark green-black base */
+  --color-hud-cyan:         #00ffea;
+  --color-hud-green:        #00ffea;
+  --color-hud-green-dark:   #004440;
+  --color-hud-blue:         #0af0ff;
+  --color-hud-orange:       #ff6a00;
+  --color-hud-red:          #ff2244;
+  --color-hud-background:   #000c0a;
+  --color-hud-panel:        rgba(0, 255, 234, 0.04);
+  --color-hud-border:       rgba(0, 255, 234, 0.15);
+  
+  --font-orbitron:   'Orbitron', monospace;
+  --font-mono:       'Share Tech Mono', 'JetBrains Mono', monospace;
+  --font-rajdhani:   'Rajdhani', sans-serif;
 }
 
+/* ============================================
+   BASE STYLES
+   ============================================ */
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   body {
     margin: 0;
     background-color: var(--color-hud-background);
-    cursor: none; /* Crucial for HUD feeling */
-    overflow: hidden; /* Fixed single-screen layout */
+    cursor: none;
+    overflow: hidden;
     color: var(--color-hud-green);
-    font-family: 'JetBrains Mono', 'Fira Code', 'Mono', monospace;
+    font-family: 'Share Tech Mono', 'JetBrains Mono', 'Fira Code', monospace;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Scanline Overlay for the analog HUD look */
+  /* CRT Scanline Layer */
   body::before {
-    content: " ";
+    content: "";
     display: block;
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-    z-index: 9999;
-    background-size: 100% 3px, 3px 100%;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.15) 50%),
+      linear-gradient(90deg, rgba(255,0,0,0.015), rgba(0,255,0,0.02), rgba(0,0,255,0.015));
+    background-size: 100% 2px, 2px 100%;
+    z-index: 9998;
     pointer-events: none;
-    opacity: 0.3;
+    opacity: 0.35;
+  }
+
+  /* Vignette Layer */
+  body::after {
+    content: "";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.65) 100%);
+    z-index: 9997;
+    pointer-events: none;
   }
 }
 
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
 @layer utilities {
-  /* Slow rotation for HUD gears and rings */
+
+  /* --- Rotation --- */
   @keyframes spin-slow {
     from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes spin-slow-reverse {
+    from { transform: rotate(360deg); }
+    to   { transform: rotate(0deg); }
+  }
+  @keyframes spin-medium {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
   }
 
-  .animate-spin-slow {
-    animation: spin-slow 12s linear infinite;
+  /* --- Radar Sweep --- */
+  @keyframes radar-sweep {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
   }
 
-  /* Scanning horizontal bar effect */
+  /* --- Scanning Line --- */
   @keyframes scan {
-    from { top: -10%; }
-    to { top: 110%; }
+    0%   { top: -2%; opacity: 1; }
+    95%  { opacity: 0.5; }
+    100% { top: 102%; opacity: 0; }
+  }
+  @keyframes scan-horizontal {
+    0%   { left: -5%; }
+    100% { left: 105%; }
   }
 
-  .animate-scan {
-    animation: scan 8s linear infinite;
+  /* --- Glitch Effect --- */
+  @keyframes glitch {
+    0%   { text-shadow: 0.05em 0 0 rgba(255,0,60,0.75), -0.025em -0.05em 0 rgba(0,255,234,0.75); clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%); }
+    15%  { text-shadow: -0.05em -0.025em 0 rgba(255,0,60,0.75), 0.025em 0.025em 0 rgba(0,255,234,0.75); clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); }
+    30%  { text-shadow: 0.025em 0.05em 0 rgba(255,0,60,0.75), 0.05em 0 0 rgba(0,255,234,0.75); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    45%  { text-shadow: -0.025em -0.025em 0 rgba(255,0,60,0.75), -0.05em -0.05em 0 rgba(0,255,234,0.75); clip-path: polygon(0 15%, 100% 15%, 100% 45%, 0 45%); }
+    75%  { text-shadow: 0; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    100% { text-shadow: 0; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  }
+  @keyframes glitch-2 {
+    0%   { clip-path: polygon(0 25%, 100% 25%, 100% 50%, 0 50%); transform: translate(-2px, 0); }
+    20%  { clip-path: polygon(0 55%, 100% 55%, 100% 65%, 0 65%); transform: translate(2px, 0); }
+    40%  { clip-path: polygon(0 5%,  100% 5%,  100% 20%, 0 20%); transform: translate(-1px, 0); }
+    60%  { clip-path: polygon(0 70%, 100% 70%, 100% 90%, 0 90%); transform: translate(1px, 0); }
+    80%  { clip-path: polygon(0 40%, 100% 40%, 100% 60%, 0 60%); transform: translate(-2px, 0); }
+    100% { clip-path: polygon(0 0,   100% 0,   100% 100%, 0 100%); transform: translate(0); }
   }
 
-  /* Custom Grid Background */
+  /* --- Flicker --- */
+  @keyframes flicker {
+    0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
+    20%, 21.999%, 63%, 63.999%, 65%, 69.999%            { opacity: 0.4; }
+  }
+
+  /* --- Data scroll (terminal text) --- */
+  @keyframes data-scroll {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-50%); }
+  }
+
+  /* --- Slide In --- */
+  @keyframes slide-in-right {
+    from { transform: translateX(30px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+  }
+  @keyframes slide-in-left {
+    from { transform: translateX(-30px); opacity: 0; }
+    to   { transform: translateX(0);     opacity: 1; }
+  }
+  @keyframes slide-in-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* --- Boot Sequence --- */
+  @keyframes boot-line {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+  @keyframes boot-blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,255,234,0.3), 0 0 60px rgba(0,255,234,0.1); }
+    50%      { box-shadow: 0 0 40px rgba(0,255,234,0.6), 0 0 100px rgba(0,255,234,0.3); }
+  }
+
+  /* --- Waveform bars --- */
+  @keyframes wave-1 { 0%,100%{height:4px} 50%{height:20px} }
+  @keyframes wave-2 { 0%,100%{height:8px} 50%{height:32px} }
+  @keyframes wave-3 { 0%,100%{height:6px} 50%{height:24px} }
+  @keyframes wave-4 { 0%,100%{height:12px} 50%{height:40px} }
+  @keyframes wave-5 { 0%,100%{height:4px} 50%{height:16px} }
+
+  /* --- Blip ping --- */
+  @keyframes blip-fade {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2.5); }
+  }
+
+  /* ============================================
+     ANIMATION CLASSES
+     ============================================ */
+  .animate-spin-slow         { animation: spin-slow 12s linear infinite; }
+  .animate-spin-slow-reverse { animation: spin-slow-reverse 18s linear infinite; }
+  .animate-spin-medium       { animation: spin-medium 7s linear infinite; }
+  .animate-scan              { animation: scan 8s linear infinite; }
+  .animate-radar-sweep       { animation: radar-sweep 4s linear infinite; }
+  .animate-glitch            { animation: glitch 3s infinite; }
+  .animate-flicker           { animation: flicker 5s linear infinite; }
+  .animate-slide-in-right    { animation: slide-in-right 0.5s ease-out forwards; }
+  .animate-slide-in-left     { animation: slide-in-left 0.5s ease-out forwards; }
+  .animate-slide-in-up       { animation: slide-in-up 0.5s ease-out forwards; }
+  .animate-fade-in           { animation: fade-in 0.8s ease-out forwards; }
+  .animate-pulse-glow        { animation: pulse-glow 2s ease-in-out infinite; }
+
+  /* ============================================
+     GRID BACKGROUND
+     ============================================ */
   .bg-grid {
-    background-size: 40px 40px;
-    background-image: 
-      linear-gradient(to right, rgba(0, 255, 234, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 255, 234, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-image:
+      linear-gradient(to right, rgba(0,255,234,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,255,234,0.04) 1px, transparent 1px);
   }
 
-  /* --- JARVIS SCROLLBAR UTILITIES --- */
-  
-  /* Hide scrollbar but keep functionality */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  /* ============================================
+     SCROLLBAR
+     ============================================ */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* Custom "Holographic" Scrollbar for News Panel 
-     This fixes the bulky white scrollbar seen in your second image.
-  */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 4px; /* Thin and subtle */
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(0, 255, 234, 0.02);
-    border-radius: 10px;
-  }
-
+  .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,255,234,0.02); }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 234, 0.2); /* Semi-transparent cyan */
+    background: rgba(0,255,234,0.25);
     border-radius: 10px;
-    border: 1px solid rgba(0, 255, 234, 0.1);
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 234, 0.5); /* Brightens on interaction */
-    box-shadow: 0 0 8px rgba(0, 255, 234, 0.4);
+    background: rgba(0,255,234,0.5);
+    box-shadow: 0 0 8px rgba(0,255,234,0.4);
   }
 
-  /* Glow effects for HUD elements */
-  .text-glow {
-    text-shadow: 0 0 10px rgba(0, 255, 234, 0.5);
+  /* ============================================
+     GLOW EFFECTS
+     ============================================ */
+  .text-glow    { text-shadow: 0 0 10px rgba(0,255,234,0.6), 0 0 30px rgba(0,255,234,0.2); }
+  .text-glow-sm { text-shadow: 0 0 6px rgba(0,255,234,0.5); }
+  .border-glow  { box-shadow: 0 0 15px rgba(0,255,234,0.15), inset 0 0 15px rgba(0,255,234,0.03); }
+  .border-glow-strong { box-shadow: 0 0 30px rgba(0,255,234,0.3), inset 0 0 30px rgba(0,255,234,0.05); }
+
+  /* ============================================
+     HUD PANEL
+     ============================================ */
+  .hud-panel {
+    background: rgba(0,255,234,0.03);
+    border: 1px solid rgba(0,255,234,0.12);
+    backdrop-filter: blur(8px);
   }
-  
-  .border-glow {
-    box-shadow: 0 0 15px rgba(0, 255, 234, 0.15);
+  .hud-panel-strong {
+    background: rgba(0,255,234,0.06);
+    border: 1px solid rgba(0,255,234,0.2);
+    backdrop-filter: blur(12px);
   }
 
-  /* Mask for the news feed fade effect at top/bottom */
+  /* ============================================
+     CORNER BRACKET DECORATION
+     ============================================ */
+  .corner-bracket {
+    position: relative;
+  }
+  .corner-bracket::before,
+  .corner-bracket::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: rgba(0,255,234,0.5);
+    border-style: solid;
+  }
+  .corner-bracket::before {
+    top: -1px;
+    left: -1px;
+    border-width: 1px 0 0 1px;
+  }
+  .corner-bracket::after {
+    bottom: -1px;
+    right: -1px;
+    border-width: 0 1px 1px 0;
+  }
+
+  /* ============================================
+     WAVEFORM BARS
+     ============================================ */
+  .wave-bar { 
+    width: 3px;
+    border-radius: 2px;
+    background: var(--color-hud-cyan);
+    align-self: center;
+  }
+  .wave-bar.active-1  { animation: wave-1 0.5s ease-in-out infinite; }
+  .wave-bar.active-2  { animation: wave-2 0.6s ease-in-out infinite 0.05s; }
+  .wave-bar.active-3  { animation: wave-3 0.7s ease-in-out infinite 0.1s; }
+  .wave-bar.active-4  { animation: wave-4 0.55s ease-in-out infinite 0.15s; }
+  .wave-bar.active-5  { animation: wave-5 0.65s ease-in-out infinite 0.2s; }
+  .wave-bar.idle      { height: 3px; opacity: 0.3; }
+
+  /* ============================================
+     NEWS MASK
+     ============================================ */
   .news-mask {
-    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
   }
+
+  /* ============================================
+     FONT HELPERS
+     ============================================ */
+  .font-orbitron  { font-family: 'Orbitron', monospace; }
+  .font-rajdhani  { font-family: 'Rajdhani', sans-serif; }
 }
