@@ -119,8 +119,6 @@ app.get('/api/status', (req, res) => {
 app.get('/', (req, res) => res.send("Jarvis Neural Core Online."));
 
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => console.log(`Jarvis Neural Core Online on port ${PORT}`));
-}
+app.listen(PORT, () => console.log(`Jarvis Neural Core Online on port ${PORT}`));
 
 export default app;
