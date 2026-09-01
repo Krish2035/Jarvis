@@ -32,8 +32,17 @@ export const SystemRings = ({ isListening, setIsListening, speak, setNews, setSt
       }
 
       try {
+        // Resolve backend URL dynamically
+        let endpoint = '/api/process-command';
+        if (import.meta.env.VITE_API_URL) {
+          const base = import.meta.env.VITE_API_URL.replace(/\/$/, '');
+          endpoint = `${base}/api/process-command`;
+        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          endpoint = 'http://localhost:5000/api/process-command';
+        }
+
         // Post to backend
-        const { data } = await axios.post('http://localhost:5000/api/process-command', { 
+        const { data } = await axios.post(endpoint, { 
           transcript 
         });
         
@@ -53,7 +62,7 @@ export const SystemRings = ({ isListening, setIsListening, speak, setNews, setSt
       } catch (err) {
         console.error("Backend Connection Failed:", err);
         setStatus("ERROR");
-        speak("Sir, I'm having trouble reaching the local server. Please check the backend console.");
+        speak("Sir, I'm having trouble synchronizing with the backend neural uplink.");
       }
     };
 
