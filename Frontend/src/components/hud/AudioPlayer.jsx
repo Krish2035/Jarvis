@@ -1,7 +1,7 @@
 import { Play, SkipForward, Activity } from 'lucide-react';
 
 export const AudioPlayer = () => (
-  <div className="border border-hud-green/10 p-3 bg-hud-green/[0.02] w-56 relative corner-bracket hover:bg-hud-green/[0.05] transition-all duration-300">
+  <div className="border border-hud-green/10 p-3 bg-hud-green/[0.02] w-full max-w-xs md:w-56 relative corner-bracket hover:bg-hud-green/[0.05] transition-all duration-300">
     <div className="flex items-center justify-between mb-1.5">
       <div className="flex items-center gap-1.5 text-hud-cyan">
         <Activity size={12} className="animate-pulse" />
@@ -16,7 +16,7 @@ export const AudioPlayer = () => (
       </div>
     </div>
     
-    <div className="text-[10px] truncate mb-3 italic text-white/95 tracking-wide">
+    <div className="text-[9.5px] sm:text-[10px] truncate mb-3 italic text-white/95 tracking-wide">
       Scrolls of Aryavart - Maddi's World
     </div>
     

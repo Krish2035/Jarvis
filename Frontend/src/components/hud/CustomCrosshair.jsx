@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react';
 
 export const CustomCrosshair = () => {
-  const [pos, setPos]           = useState({ x: 0, y: 0 });
-  const [ghost, setGhost]       = useState({ x: 0, y: 0 });
+  const [pos, setPos]           = useState({ x: -100, y: -100 });
+  const [ghost, setGhost]       = useState({ x: -100, y: -100 });
   const [clicking, setClicking] = useState(false);
+  const [isPointerDevice, setIsPointerDevice] = useState(false);
 
   useEffect(() => {
+    // Only activate custom crosshair for fine pointer / mouse devices
+    const isFinePointer = window.matchMedia('(pointer: fine) and (hover: hover)').matches;
+    setIsPointerDevice(isFinePointer);
+
+    if (!isFinePointer) return;
+
     let frame;
-    let target = { x: 0, y: 0 };
+    let target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
     const onMove = (e) => {
       target = { x: e.clientX, y: e.clientY };
@@ -17,8 +24,8 @@ export const CustomCrosshair = () => {
     // Ghost trails with slight lag
     const animate = () => {
       setGhost(prev => ({
-        x: prev.x + (target.x - prev.x) * 0.12,
-        y: prev.y + (target.y - prev.y) * 0.12,
+        x: prev.x + (target.x - prev.x) * 0.14,
+        y: prev.y + (target.y - prev.y) * 0.14,
       }));
       frame = requestAnimationFrame(animate);
     };
@@ -39,13 +46,15 @@ export const CustomCrosshair = () => {
     };
   }, []);
 
+  if (!isPointerDevice) return null;
+
   const SIZE = 44;
 
   return (
     <>
       {/* Ghost / trailing circle */}
       <div
-        className="fixed pointer-events-none z-[9996]"
+        className="fixed pointer-events-none z-[9996] hidden md:block"
         style={{
           transform: `translate(${ghost.x - SIZE}px, ${ghost.y - SIZE}px)`,
           width: SIZE * 2, height: SIZE * 2,
@@ -59,7 +68,7 @@ export const CustomCrosshair = () => {
 
       {/* Main crosshair */}
       <div
-        className="fixed pointer-events-none z-[9999]"
+        className="fixed pointer-events-none z-[9999] hidden md:block"
         style={{
           transform: `translate(${pos.x - SIZE / 2}px, ${pos.y - SIZE / 2}px)`,
           width: SIZE, height: SIZE,
@@ -102,7 +111,7 @@ export const CustomCrosshair = () => {
 
       {/* Coordinate readout */}
       <div
-        className="fixed pointer-events-none z-[9999] text-hud-cyan/40 font-mono"
+        className="fixed pointer-events-none z-[9999] text-hud-cyan/40 font-mono hidden md:block"
         style={{
           left: pos.x + 22,
           top: pos.y + 16,

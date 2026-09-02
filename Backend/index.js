@@ -7,7 +7,11 @@ import { generateJarvisResponse, getApiKeys } from './aiEngine.js';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Mock telemetry / fallback packets for HUD
@@ -91,7 +95,7 @@ app.post('/api/process-command', async (req, res) => {
             topic: aiResult.topic,
             source: aiResult.source,
             needs_news: Boolean(aiResult.needs_news),
-            articles: articles
+            articles: articles.length > 0 ? articles : getContextualTelemetry(aiResult.topic, aiResult.answer)
         });
 
     } catch (error) {
@@ -119,6 +123,6 @@ app.get('/api/status', (req, res) => {
 app.get('/', (req, res) => res.send("Jarvis Neural Core Online."));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Jarvis Neural Core Online on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Jarvis Neural Core Online on http://0.0.0.0:${PORT}`));
 
 export default app;

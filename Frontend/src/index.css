@@ -21,22 +21,30 @@
 }
 
 /* ============================================
-   BASE STYLES
+   BASE STYLES & MOBILE OPTIMIZATIONS
    ============================================ */
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
     background-color: var(--color-hud-background);
-    cursor: none;
-    overflow: hidden;
     color: var(--color-hud-green);
     font-family: 'Share Tech Mono', 'JetBrains Mono', 'Fira Code', monospace;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+  }
+
+  /* Desktop Fine Cursor Only */
+  @media (hover: hover) and (pointer: fine) {
+    body {
+      cursor: none;
+    }
   }
 
   /* CRT Scanline Layer */
@@ -51,7 +59,7 @@
     background-size: 100% 2px, 2px 100%;
     z-index: 9998;
     pointer-events: none;
-    opacity: 0.35;
+    opacity: 0.25;
   }
 
   /* Vignette Layer */
@@ -197,10 +205,10 @@
      GRID BACKGROUND
      ============================================ */
   .bg-grid {
-    background-size: 50px 50px;
+    background-size: 40px 40px;
     background-image:
-      linear-gradient(to right, rgba(0,255,234,0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0,255,234,0.04) 1px, transparent 1px);
+      linear-gradient(to right, rgba(0,255,234,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,255,234,0.035) 1px, transparent 1px);
   }
 
   /* ============================================

@@ -14,9 +14,9 @@ export const StorageStatus = () => {
   }, []);
 
   return (
-    <div className="space-y-4 font-mono w-60">
+    <div className="space-y-3.5 sm:space-y-4 font-mono w-full max-w-xs">
       <div>
-        <div className="flex justify-between mb-1 text-[9px] tracking-widest text-hud-green/80">
+        <div className="flex justify-between mb-1 text-[8.5px] sm:text-[9px] tracking-widest text-hud-green/80">
           <span>PRIMARY_DRIVE</span>
           <span>{driveVal}%</span>
         </div>
@@ -31,7 +31,7 @@ export const StorageStatus = () => {
       </div>
 
       <div>
-        <div className="flex justify-between mb-1 text-[9px] tracking-widest text-hud-green/80">
+        <div className="flex justify-between mb-1 text-[8.5px] sm:text-[9px] tracking-widest text-hud-green/80">
           <span>NEURAL_BUFFER</span>
           <span>{coreVal}%</span>
         </div>
@@ -44,7 +44,7 @@ export const StorageStatus = () => {
         </div>
       </div>
 
-      <div className="flex justify-between items-center text-[8px] text-hud-green/40 leading-tight pt-1">
+      <div className="flex justify-between items-center text-[7.5px] sm:text-[8px] text-hud-green/40 leading-tight pt-1">
         <div>
           D_SECTOR: <span className="text-hud-green/60">0x88291</span> <br />
           ALLOC_VOL: <span className="text-hud-green/60">409.2 GB</span>
